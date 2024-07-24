@@ -7,8 +7,8 @@ export default interface Balloon {
         telemetry: number;
     };
     traquito?: {
-        flightID1?: number;
-        flightID3?: number;
+        flightID1?: string;
+        flightID3?: string;
     };
     hamCallsign: string;
     comment: string;

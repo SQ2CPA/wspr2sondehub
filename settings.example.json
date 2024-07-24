@@ -15,8 +15,8 @@
                 "telemetry": 6
             },
             "traquito": {
-                "flightID1": 1,
-                "flightID3": 6
+                "flightID1": "1",
+                "flightID3": "6"
             },
             "hamCallsign": "SP2ROC",
             "comment": "SAG ClearPico,He,11.7g PL,6g FL",
