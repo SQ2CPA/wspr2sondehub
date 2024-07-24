@@ -64,6 +64,7 @@ const settings: Settings = {
             trackerType: "traquito",
         },
         {
+            active: true,
             payload: "SQ2CPA-30",
             band: BAND_20M,
             slots: {
@@ -110,6 +111,8 @@ interface Receiver {
     frequency: number;
     snr: number;
     date: Date;
+    locator: string;
+    comment: string;
 }
 
 function parseQuery(msg: string): QueryResult {
@@ -143,6 +146,14 @@ async function performQuery(aQuery: string): Promise<string> {
     }
 }
 
+interface SondehubListenerPayload {
+    software_name?: string;
+    software_version?: string;
+    uploader_callsign: string;
+    uploader_position: number[];
+    mobile?: boolean;
+}
+
 interface SondehubPayload {
     dev?: boolean;
     software_name: string;
@@ -165,6 +176,8 @@ interface SondehubPayload {
     sats?: number;
     gps?: number;
     temp?: number;
+    vel_v?: number;
+    vel_h?: number;
 }
 
 function processCoordinatesAPRS(coord, isLatitude) {
@@ -209,6 +222,28 @@ function convertCoordinates(lat, lon) {
     const longitude = processCoordinatesAPRS(lon, false);
 
     return { latitude, longitude };
+}
+
+function getLocationFromLocator(upperMaidenHead: string): {
+    lat: number;
+    lon: number;
+} {
+    upperMaidenHead = upperMaidenHead.toUpperCase();
+
+    const lon =
+        -180 +
+        (upperMaidenHead.charCodeAt(0) - "A".charCodeAt(0)) * 20 +
+        parseInt(upperMaidenHead[2]) * 2 +
+        ((upperMaidenHead.charCodeAt(4) - "A".charCodeAt(0)) * 5) / 60 +
+        2.5 / 60;
+    const lat =
+        -90 +
+        (upperMaidenHead.charCodeAt(1) - "A".charCodeAt(0)) * 10 +
+        parseInt(upperMaidenHead[3]) * 1 +
+        ((upperMaidenHead.charCodeAt(5) - "A".charCodeAt(0)) * 2.5) / 60 +
+        1.25 / 60;
+
+    return { lon, lat };
 }
 
 async function uploadToAPRSIS(query1: QueryResult, balloon: Balloon) {
@@ -262,13 +297,13 @@ async function getReceivers(
 ): Promise<Receiver[]> {
     const rawQuery1 = (
         await performQuery(
-            `SELECT rx_sign, frequency, snr, toString(time) as stime FROM wspr.rx WHERE (band='${balloon.band}') AND (time = '${stime1}') AND (tx_sign='${balloon.hamCallsign}') ORDER BY snr ASC LIMIT 10`
+            `SELECT rx_sign, frequency, snr, toString(time) as stime, rx_loc, version FROM wspr.rx WHERE (band='${balloon.band}') AND (time = '${stime1}') AND (tx_sign='${balloon.hamCallsign}') ORDER BY snr ASC LIMIT 10`
         )
     ).split("\n");
 
     const rawQuery2 = (
         await performQuery(
-            `SELECT rx_sign, frequency, snr, toString(time) as stime FROM wspr.rx WHERE (band='${
+            `SELECT rx_sign, frequency, snr, toString(time) as stime, rx_loc, version FROM wspr.rx WHERE (band='${
                 balloon.band
             }') AND (time = '${stime2}') AND (tx_sign='${
                 secondCallsign || balloon.hamCallsign
@@ -284,10 +319,26 @@ async function getReceivers(
             frequency: Number(source[1]),
             snr: Number(source[2]),
             date: new Date(source[3]),
+            locator: source[4],
+            comment: source[5],
         };
     });
 
     return queries;
+}
+
+async function uploadListenerToSondehub(data: any) {
+    const response = await axios({
+        url: "https://api.v2.sondehub.org/amateur/listeners",
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            Accept: "text/plain",
+        },
+        data,
+    });
+
+    console.log(JSON.stringify(response.data));
 }
 
 async function uploadToSondehub(data: SondehubPayload[]) {
@@ -371,7 +422,7 @@ async function decodeTraquito(
     const batt_1 = sum2 - temp_1 * 6720;
     const batt_2 = Math.floor(batt_1 / 168);
     const batt_3 = batt_2 * 10 + 614;
-    const batt = (batt_3 * 5) / 1024;
+    const batt = (batt_3 * 5) / 1024 - 0.96;
 
     console.log("Voltage: " + batt);
 
@@ -388,19 +439,11 @@ async function decodeTraquito(
     console.log("GPS: " + gps);
     console.log("Sats: " + sats);
 
+    const mps = speed * 0.514444;
+
     const upperMaidenHead = finalMaidenHead.toUpperCase();
-    const lon =
-        -180 +
-        (upperMaidenHead.charCodeAt(0) - "A".charCodeAt(0)) * 20 +
-        parseInt(upperMaidenHead[2]) * 2 +
-        ((upperMaidenHead.charCodeAt(4) - "A".charCodeAt(0)) * 5) / 60 +
-        2.5 / 60;
-    const lat =
-        -90 +
-        (upperMaidenHead.charCodeAt(1) - "A".charCodeAt(0)) * 10 +
-        parseInt(upperMaidenHead[3]) * 1 +
-        ((upperMaidenHead.charCodeAt(5) - "A".charCodeAt(0)) * 2.5) / 60 +
-        1.25 / 60;
+
+    const { lon, lat } = getLocationFromLocator(upperMaidenHead);
 
     console.log("Latitude: " + lat);
     console.log("Longitude: " + lon);
@@ -412,7 +455,7 @@ async function decodeTraquito(
 
     if (settings.uploadToSondehub) {
         const data: SondehubPayload = {
-            software_name: "SQ2CPA wspr2sondechub",
+            software_name: "SQ2CPA wspr2sondehub",
             software_version: "1.0.0",
             modulation: "WSPR",
             comment: balloon.comment,
@@ -429,6 +472,7 @@ async function decodeTraquito(
             batt,
             sats,
             temp,
+            vel_h: mps,
             uploader_callsign: "",
             frequency: 0.0,
             snr: 0.0,
@@ -455,12 +499,19 @@ async function decodeTraquito(
             data.frequency = receiver.frequency / 1000000;
             data.snr = receiver.snr;
 
-            receiver.date.setHours(receiver.date.getHours() + 2);
-
-            data.time_received = receiver.date.toISOString();
-            data.datetime = data.time_received;
-
             await uploadToSondehub([data]);
+
+            const { lat, lon } = getLocationFromLocator(receiver.locator);
+
+            const listenerData: SondehubListenerPayload = {
+                mobile: false,
+                software_name: receiver.comment.trim() || "No receiver info",
+                software_version: "1.0.0",
+                uploader_position: [lat, lon, 0],
+                uploader_callsign: receiver.callsign,
+            };
+
+            // await uploadListenerToSondehub(listenerData);
         }
     }
 }
@@ -496,7 +547,7 @@ async function decodeZachtek1(
 
     if (settings.uploadToSondehub) {
         const data: SondehubPayload = {
-            software_name: "SQ2CPA wspr2sondechub",
+            software_name: "SQ2CPA wspr2sondehub",
             software_version: "1.0.0",
             modulation: "WSPR",
             comment: balloon.comment,
@@ -535,6 +586,18 @@ async function decodeZachtek1(
             data.snr = receiver.snr;
 
             await uploadToSondehub([data]);
+
+            const { lat, lon } = getLocationFromLocator(receiver.locator);
+
+            const listenerData: SondehubListenerPayload = {
+                mobile: false,
+                software_name: receiver.comment.trim() || "No receiver info",
+                software_version: "1.0.0",
+                uploader_position: [lat, lon, 0],
+                uploader_callsign: receiver.callsign,
+            };
+
+            // await uploadListenerToSondehub(listenerData);
         }
     }
 }
