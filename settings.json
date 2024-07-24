@@ -5,53 +5,5 @@
     },
     "uploadToSondehub": true,
     "uploadToAPRS": false,
-    "balloons": [
-        // {
-        //     "active": true,
-        //     "payload": "SP2ROC-30",
-        //     "band": 14,
-        //     "slots": {
-        //         "callsign": 4,
-        //         "telemetry": 6
-        //     },
-        //     "traquito": {
-        //         "flightID1": 1,
-        //         "flightID3": 6
-        //     },
-        //     "hamCallsign": "SP2ROC",
-        //     "comment": "SAG ClearPico,He,11.7g PL,6g FL",
-        //     "detail": "Launch Date: 2024-05-26 09:00z",
-        //     "type": "Jetpack",
-        //     "trackerType": "traquito"
-        // },
-        // {
-        //     "active": true,
-        //     "payload": "SQ2CPA-30",
-        //     "band": 14,
-        //     "slots": {
-        //         "callsign": 8,
-        //         "telemetry": 0
-        //     },
-        //     "hamCallsign": "SQ2CPA",
-        //     "comment": "SQ2CPA-11 for LoRa APRS",
-        //     "detail": "Launch date: 2024-07-15 07:00z",
-        //     "device": "LoRa APRS+WSPR tracker, 20m band",
-        //     "type": "ZachTek",
-        //     "trackerType": "zachtek1"
-        // },
-        // {
-        //     "payload": "SQ2CPA-34",
-        //     "band": 14,
-        //     "slots": {
-        //         "callsign": 8,
-        //         "telemetry": 0
-        //     },
-        //     "hamCallsign": "SQ2CPA/1",
-        //     "comment": "SP2BYD-11 for LoRa APRS",
-        //     "detail": "Launch date: 2024-07-20 07:00z",
-        //     "device": "LoRa APRS+WSPR tracker, 20m band",
-        //     "type": "ZachTek",
-        //     "trackerType": "zachtek1"
-        // }
-    ]
+    "balloons": []
 }
