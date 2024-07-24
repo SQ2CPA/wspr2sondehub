@@ -70,57 +70,6 @@ export default class TelemetryParserApi {
             longitude: query2.longitude,
             altitude,
         };
-
-        // if (settings.uploadToSondehub) {
-        //     const data: TelemetryPayload = {
-        //         software_name: SOFTWARE_NAME,
-        //         software_version: SOFTWARE_VERSION,
-        //         modulation: "WSPR",
-        //         comment: balloon.comment,
-        //         detail: balloon.detail,
-        //         device: balloon.device,
-        //         type: balloon.type,
-        //         time_received: "2024-01-01",
-        //         datetime: "2024-01-01",
-        //         payload_callsign: balloon.payload,
-        //         lat: query2.latitude,
-        //         lon: query2.longitude,
-        //         alt: altitude,
-        //         uploader_callsign: "",
-        //         frequency: 0.0,
-        //         snr: 0.0,
-        //     };
-
-        //     data.time_received = ;
-        //     data.datetime = data.time_received;
-
-        //     const receivers = await getReceivers(
-        //         query1.stime,
-        //         query2.stime,
-        //         balloon
-        //     );
-
-        //     console.log(
-        //         `Got receivers: ${receivers.map((o) => o.callsign).join()}`
-        //     );
-
-        //     for (const receiver of receivers) {
-        //         data.uploader_callsign = receiver.callsign;
-        //         data.frequency = receiver.frequency / 1000000;
-        //         data.snr = receiver.snr;
-
-        //         await SondehubApi.uploadTelemetry([data]);
-
-        //         // const { lat, lon } = getLocationFromLocator(receiver.locator);
-
-        //         // await SondehubApi.uploadListener({
-        //         //     mobile: false,
-        //         //     software_name: receiver.comment.trim() || "No receiver info",
-        //         //     software_version: "1.0.0",
-        //         //     uploader_position: [lat, lon, 0],
-        //         //     uploader_callsign: receiver.callsign,
-        //         // });
-        //     }
     }
 
     async decodeTraquito(
@@ -213,37 +162,5 @@ export default class TelemetryParserApi {
             velocityHorizontal: mps,
             temperature,
         };
-
-        // if (settings.uploadToSondehub) {
-        //     const data: TelemetryPayload = {
-        //         software_name: SOFTWARE_NAME,
-        //         software_version: SOFTWARE_VERSION,
-        //         modulation: "WSPR",
-        //         comment: balloon.comment,
-        //         detail: balloon.detail,
-        //         device: balloon.device,
-        //         type: balloon.type,
-        //         time_received: "",
-        //         datetime: "",
-        //         payload_callsign: balloon.payload,
-        //         lat,
-        //         lon,
-        //         alt,
-        //         gps,
-        //         batt,
-        //         sats,
-        //         temp,
-        //         vel_h: mps,
-        //         uploader_callsign: "",
-        //         frequency: 0.0,
-        //         snr: 0.0,
-        //     };
-
-        //     date.setHours(date.getHours() + 2);
-
-        //     data.time_received = date.toISOString();
-        //     data.datetime = data.time_received;
-
-        // }
     }
 }
