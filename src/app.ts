@@ -1,76 +1,18 @@
 import SondehubApi, { TelemetryPayload } from "./lib/SondehubApi";
-import Settings from "./interface/Settings";
 import WSPRAPi from "./lib/WSPRApi";
 import APRSISApi from "./lib/APRSISApi";
 import TelemetryParserApi, { Telemetry } from "./lib/TelemetryParserApi";
+import { readFile } from "fs/promises";
 
 const SOFTWARE_NAME = "SQ2CPA wspr2sondehub";
 const SOFTWARE_VERSION = "1.0.0";
 
-const BAND_20M = 14;
-
 const TYPE_ZACHTEK = "ZachTek";
 const TYPE_TRAQUITO = "Jetpack";
 
-const settings: Settings = {
-    aprs: {
-        callsign: "",
-        passcode: 0,
-    },
-    uploadToSondehub: true,
-    uploadToAPRS: false,
-    balloons: [
-        {
-            active: true,
-            payload: "SP2ROC-30",
-            band: BAND_20M,
-            slots: {
-                callsign: 4,
-                telemetry: 6,
-            },
-            traquito: {
-                flightID1: 1,
-                flightID3: 6,
-            },
-            hamCallsign: "SP2ROC",
-            comment: "SAG ClearPico,He,11.7g PL,6g FL",
-            detail: "Launch Date: 2024-05-26 09:00z",
-            type: TYPE_TRAQUITO,
-            trackerType: "traquito",
-        },
-        {
-            active: true,
-            payload: "SQ2CPA-30",
-            band: BAND_20M,
-            slots: {
-                callsign: 8,
-                telemetry: 0,
-            },
-            hamCallsign: "SQ2CPA",
-            comment: "SQ2CPA-11 for LoRa APRS",
-            detail: "Launch date: 2024-07-15 07:00z",
-            device: "LoRa APRS+WSPR tracker, 20m band",
-            type: TYPE_ZACHTEK,
-            trackerType: "zachtek1",
-        },
-        {
-            payload: "SQ2CPA-34",
-            band: BAND_20M,
-            slots: {
-                callsign: 8,
-                telemetry: 0,
-            },
-            hamCallsign: "SQ2CPA/1",
-            comment: "SP2BYD-11 for LoRa APRS",
-            detail: "Launch date: 2024-07-20 07:00z",
-            device: "LoRa APRS+WSPR tracker, 20m band",
-            type: TYPE_ZACHTEK,
-            trackerType: "zachtek1",
-        },
-    ],
-};
-
 (async function () {
+    const settings = JSON.parse(await readFile("./settings.json", "utf-8"));
+
     const wsprApi = new WSPRAPi();
     const sondehubApi = new SondehubApi();
     const aprsisApi = new APRSISApi(
@@ -216,8 +158,8 @@ const settings: Settings = {
             }
         }
 
-        if (settings.uploadToAPRS) {
-            aprsisApi.upload(telemetry, balloon);
-        }
+        // if (settings.uploadToAPRS) {
+        //     aprsisApi.upload(telemetry, balloon);
+        // }
     }
 })();
