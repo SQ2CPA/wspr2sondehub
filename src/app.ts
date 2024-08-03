@@ -3,6 +3,7 @@ import WSPRAPi from "./lib/WSPRApi";
 import APRSISApi from "./lib/APRSISApi";
 import TelemetryParserApi, { Telemetry } from "./lib/TelemetryParserApi";
 import { readFile } from "fs/promises";
+import Settings from "./interface/Settings";
 
 const SOFTWARE_NAME = "SQ2CPA wspr2sondehub";
 const SOFTWARE_VERSION = "1.0.0";
@@ -11,7 +12,9 @@ const TYPE_ZACHTEK = "ZachTek";
 const TYPE_TRAQUITO = "Jetpack";
 
 (async function () {
-    const settings = JSON.parse(await readFile("./settings.json", "utf-8"));
+    const settings: Settings = JSON.parse(
+        await readFile("./settings.json", "utf-8")
+    );
 
     const wsprApi = new WSPRAPi();
     const sondehubApi = new SondehubApi();
@@ -27,7 +30,11 @@ const TYPE_TRAQUITO = "Jetpack";
             continue;
         }
 
-        console.log(`Checking balloon: ${balloon.payload}`);
+        console.log(
+            `Checking balloon: ${balloon.payload} (${balloon.type}) (${
+                balloon.band || "any band"
+            })`
+        );
 
         if (![TYPE_TRAQUITO, TYPE_ZACHTEK].includes(balloon.type)) {
             console.log(`Invalid balloon type: ${balloon.type}`);
@@ -50,15 +57,17 @@ const TYPE_TRAQUITO = "Jetpack";
         const telemetryTimeslot =
             "____-__-__ __:_" + balloon.slots.telemetry + "%";
 
+        const bandWhere = !balloon.band ? "" : `(band='${balloon.band}') AND `;
+
         const rawQuery1 = await wsprApi.performQuery(
-            `SELECT toString(time) as stime, band, tx_sign, tx_loc, tx_lat, tx_lon, power, stime FROM wspr.rx WHERE (band='${balloon.band}') AND (stime LIKE '${callsignTimeslot}') AND (time > ${queryTime}) AND (tx_sign='${balloon.hamCallsign}') ORDER BY time DESC LIMIT 1`
+            `SELECT toString(time) as stime, band, tx_sign, tx_loc, tx_lat, tx_lon, power, stime FROM wspr.rx WHERE ${bandWhere}(stime LIKE '${callsignTimeslot}') AND (time > ${queryTime}) AND (tx_sign='${balloon.hamCallsign}') ORDER BY time DESC LIMIT 1`
         );
 
         let rawQuery2 = "";
 
         if (balloon.type === TYPE_ZACHTEK) {
             rawQuery2 = await wsprApi.performQuery(
-                `SELECT toString(time) as stime, band, tx_sign, tx_loc, tx_lat, tx_lon, power, stime FROM wspr.rx WHERE (band='${balloon.band}') AND (stime LIKE '${telemetryTimeslot}') AND (time > ${queryTime}) AND (tx_sign='${balloon.hamCallsign}') ORDER BY time DESC LIMIT 1`
+                `SELECT toString(time) as stime, band, tx_sign, tx_loc, tx_lat, tx_lon, power, stime FROM wspr.rx WHERE ${bandWhere}(stime LIKE '${telemetryTimeslot}') AND (time > ${queryTime}) AND (tx_sign='${balloon.hamCallsign}') ORDER BY time DESC LIMIT 1`
             );
         } else if (balloon.type === TYPE_TRAQUITO) {
             const flightID =
@@ -68,14 +77,17 @@ const TYPE_TRAQUITO = "Jetpack";
                 "%";
 
             rawQuery2 = await wsprApi.performQuery(
-                `SELECT toString(time) as stime, band, tx_sign, tx_loc, tx_lat, tx_lon, power, stime FROM wspr.rx WHERE (band='${balloon.band}') AND (stime LIKE '${telemetryTimeslot}') AND (time > ${queryTime}) AND (tx_sign LIKE '${flightID}') ORDER BY time DESC LIMIT 1`
+                `SELECT toString(time) as stime, band, tx_sign, tx_loc, tx_lat, tx_lon, power, stime FROM wspr.rx WHERE ${bandWhere}(stime LIKE '${telemetryTimeslot}') AND (time > ${queryTime}) AND (tx_sign LIKE '${flightID}') ORDER BY time DESC LIMIT 1`
             );
         }
 
-        if (!rawQuery1.length || !rawQuery2.length) continue;
+        if (!rawQuery1.length || !rawQuery2.length) {
+            console.log(`No data in last 30 minutes`);
+            continue;
+        }
 
-        // console.log(rawQuery1);
-        // console.log(rawQuery2);
+        console.log(rawQuery1);
+        console.log(rawQuery2);
 
         const query1 = wsprApi.parseQuery(rawQuery1);
         const query2 = wsprApi.parseQuery(rawQuery2);

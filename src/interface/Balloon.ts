@@ -1,7 +1,7 @@
 export default interface Balloon {
     active?: boolean;
     payload: string;
-    band: number;
+    band?: number;
     slots: {
         callsign: number;
         telemetry: number;

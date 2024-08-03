@@ -45,17 +45,17 @@ export default class WSPRAPi {
         balloon: Balloon,
         secondCallsign?: string
     ): Promise<Receiver[]> {
+        const bandWhere = !balloon.band ? "" : `(band='${balloon.band}') AND `;
+
         const rawQuery1 = (
             await this.performQuery(
-                `SELECT rx_sign, frequency, snr, toString(time) as stime, rx_loc, version FROM wspr.rx WHERE (band='${balloon.band}') AND (time = '${stime1}') AND (tx_sign='${balloon.hamCallsign}') ORDER BY snr ASC LIMIT 10`
+                `SELECT rx_sign, frequency, snr, toString(time) as stime, rx_loc, version FROM wspr.rx WHERE ${bandWhere}(time = '${stime1}') AND (tx_sign='${balloon.hamCallsign}') ORDER BY snr ASC LIMIT 10`
             )
         ).split("\n");
 
         const rawQuery2 = (
             await this.performQuery(
-                `SELECT rx_sign, frequency, snr, toString(time) as stime, rx_loc, version FROM wspr.rx WHERE (band='${
-                    balloon.band
-                }') AND (time = '${stime2}') AND (tx_sign='${
+                `SELECT rx_sign, frequency, snr, toString(time) as stime, rx_loc, version FROM wspr.rx WHERE ${bandWhere}(time = '${stime2}') AND (tx_sign='${
                     secondCallsign || balloon.hamCallsign
                 }') ORDER BY snr ASC LIMIT 10`
             )
