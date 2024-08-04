@@ -19,9 +19,15 @@ Uploading listeners to sondehub is also disabled.
 1. Check your NPM binary path by `which npm`
 2. Add new line into `crontab -e`
 
-`*/5 * * * * cd /home/sq2cpa/wspr2sondehub/ && /home/sq2cpa/.nvm/versions/node/v20.15.0/bin/npm run start`
+`*/5 * * * * cd /home/USERNAME/wspr2sondehub/ && /home/USERNAME/.nvm/versions/node/v20.15.0/bin/npm run start`
 
-First path (`/home/sq2cpa/wspr2sondehub/`) is your `wspr2sondehub` directory
-Second path (`/home/sq2cpa/.nvm/versions/node/v20.15.0/bin/npm`) is the `npm` path from `which npm`
+First path (`/home/USERNAME/wspr2sondehub/`) is your `wspr2sondehub` directory
+Second path (`/home/USERNAME/.nvm/versions/node/v20.15.0/bin/npm`) is the `npm` path from `which npm`
+
+You can also link your `node` and `npm` binaries from `nvm` binaries directly using
+`ln -s /home/USERNAME/.nvm/versions/node/v20.15.0/bin/node /usr/bin/node`
+`ln -s /home/USERNAME/.nvm/versions/node/v20.15.0/bin/npm /usr/bin/npm`
+where paths are from `which node` and `which nvm` after using `nvm use v20`
+Then you don't need to use aboslute paths in crontab, you can just use `node` or `nvm`
 
 # 73, Damian SQ2CPA, Poland
