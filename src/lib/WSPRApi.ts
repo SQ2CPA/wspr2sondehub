@@ -61,18 +61,23 @@ export default class WSPRAPi {
             )
         ).split("\n");
 
-        const queries = [...rawQuery1, ...rawQuery2].map((o) => {
-            const source = o.split("\t");
+        const queries = [...rawQuery1, ...rawQuery2]
+            .map((o) => {
+                const source = o.split("\t");
 
-            return {
-                callsign: source[0],
-                frequency: Number(source[1]),
-                snr: Number(source[2]),
-                date: new Date(source[3]),
-                locator: source[4],
-                comment: source[5],
-            };
-        });
+                return {
+                    callsign: source[0],
+                    frequency: Number(source[1]),
+                    snr: Number(source[2]),
+                    date: new Date(source[3]),
+                    locator: source[4],
+                    comment: source[5],
+                };
+            })
+            .sort((a, b) => a.snr - b.snr)
+            .slice(0, 10);
+
+        console.log(queries);
 
         return queries;
     }
