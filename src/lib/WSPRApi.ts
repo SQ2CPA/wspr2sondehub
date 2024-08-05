@@ -77,8 +77,6 @@ export default class WSPRAPi {
             .sort((a, b) => a.snr - b.snr)
             .slice(0, 10);
 
-        console.log(queries);
-
         return queries;
     }
 
