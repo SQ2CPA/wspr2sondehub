@@ -1,5 +1,9 @@
 # wspr2sondehub
 
+## READ THIS FIRST
+
+Please run this wspr2sondehub script ONLY for balloons that you own or you have permission from the owner! Otherwise you will cause duplicates and loss of data because you don't have required details! Thanks!
+
 ## Installation
 
 1. Install NodeJS v20 (you can use https://github.com/nvm-sh/nvm)
