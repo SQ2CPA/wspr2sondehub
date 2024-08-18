@@ -115,6 +115,16 @@ const TYPE_TRAQUITO = "Jetpack";
             );
         }
 
+        if (
+            Math.floor(telemetry.latitude) === 0 &&
+            Math.floor(telemetry.longitude) === 0
+        ) {
+            console.error(
+                `Got empty location: ${telemetry.latitude} ${telemetry.longitude}, skipping`
+            );
+            continue;
+        }
+
         if (settings.uploadToSondehub) {
             const receivers = await wsprApi.getReceivers(
                 query1.stime,
