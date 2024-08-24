@@ -8,7 +8,7 @@
     "balloons": [
         {
             "active": true,
-            "payload": "SP2ROC-30",
+            "payload": "N0CALL-31",
             "band": 14,
             "slots": {
                 "callsign": 4,
@@ -18,38 +18,45 @@
                 "flightID1": "1",
                 "flightID3": "6"
             },
-            "hamCallsign": "SP2ROC",
-            "comment": "SAG ClearPico,He,11.7g PL,6g FL",
+            "hamCallsign": "N0CALL/1",
+            "comment": "Example traquito balloon",
             "detail": "Launch Date: 2024-05-26 09:00z",
             "type": "Jetpack",
             "trackerType": "traquito"
         },
         {
             "active": true,
-            "payload": "SQ2CPA-30",
+            "payload": "N0CALL-32",
             "band": 14,
             "slots": {
                 "callsign": 8,
                 "telemetry": 0
             },
-            "hamCallsign": "SQ2CPA",
-            "comment": "SQ2CPA-11 for LoRa APRS",
+            "hamCallsign": "N0CALL/2",
+            "comment": "Example zachtek balloon",
             "detail": "Launch date: 2024-07-15 07:00z",
-            "device": "LoRa APRS+WSPR tracker, 20m band",
+            "device": "Example zachtek balloon",
             "type": "ZachTek",
             "trackerType": "zachtek1"
         },
         {
-            "payload": "SQ2CPA-34",
+            "active": true,
+            "payload": "N0CALL-33",
             "band": 14,
-            "slots": {
-                "callsign": 8,
-                "telemetry": 0
-            },
-            "hamCallsign": "SQ2CPA/1",
-            "comment": "SP2BYD-11 for LoRa APRS",
-            "detail": "Launch date: 2024-07-20 07:00z",
-            "device": "LoRa APRS+WSPR tracker, 20m band",
+            "slots": [
+                {
+                    "callsign": 8,
+                    "telemetry": 0
+                },
+                {
+                    "callsign": 4,
+                    "telemetry": 6
+                }
+            ],
+            "hamCallsign": "N0CALL/3",
+            "comment": "Example zachtek balloon ",
+            "detail": "Launch date: 2024-07-15 07:00z",
+            "device": "Multiple timeslots at 4 6, 8 0",
             "type": "ZachTek",
             "trackerType": "zachtek1"
         }

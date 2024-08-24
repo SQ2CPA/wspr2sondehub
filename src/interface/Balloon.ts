@@ -2,10 +2,15 @@ export default interface Balloon {
     active?: boolean;
     payload: string;
     band?: number;
-    slots: {
-        callsign: number;
-        telemetry: number;
-    };
+    slots:
+        | {
+              callsign: number;
+              telemetry: number;
+          }
+        | {
+              callsign: number;
+              telemetry: number;
+          }[];
     traquito?: {
         flightID1?: string;
         flightID3?: string;
