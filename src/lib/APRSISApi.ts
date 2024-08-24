@@ -113,7 +113,13 @@ export default class APRSISApi {
 
         while (taltitude.length < 6) taltitude = "0" + taltitude;
 
-        const packet1 = `${balloon.payload}>APZHUB,NOHUB,TCPIP,qAC:!${latitude}/${longitude}O000/000/A=${taltitude}/${balloon.device} (${balloon.hamCallsign})`;
+        const timestamp = telemetry.date
+            .split("T")
+            .pop()
+            .split(".")[0]
+            .replace(/:/g, "");
+
+        const packet1 = `${balloon.payload}>APZHUB,NOHUB,TCPIP,qAC:@${timestamp}!${latitude}/${longitude}O000/000/A=${taltitude}/${balloon.device} (${balloon.hamCallsign})`;
 
         // console.log(packet1);
         await connection.write(packet1 + "\r\n");
