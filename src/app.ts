@@ -18,10 +18,7 @@ const TYPE_TRAQUITO = "Jetpack";
 
     const wsprApi = new WSPRAPi();
     const sondehubApi = new SondehubApi();
-    const aprsisApi = new APRSISApi(
-        settings.aprs.callsign,
-        settings.aprs.passcode
-    );
+    const aprsisApi = new APRSISApi();
     const telemetryParserApi = new TelemetryParserApi();
 
     for (const balloon of settings.balloons) {
@@ -131,18 +128,18 @@ const TYPE_TRAQUITO = "Jetpack";
                 continue;
             }
 
+            const receivers = await wsprApi.getReceivers(
+                query1.stime,
+                query2.stime,
+                balloon,
+                query2.callsign
+            );
+
+            console.log(
+                `Got receivers: ${receivers.map((o) => o.callsign).join()}`
+            );
+
             if (settings.uploadToSondehub) {
-                const receivers = await wsprApi.getReceivers(
-                    query1.stime,
-                    query2.stime,
-                    balloon,
-                    query2.callsign
-                );
-
-                console.log(
-                    `Got receivers: ${receivers.map((o) => o.callsign).join()}`
-                );
-
                 for (const receiver of receivers) {
                     const data: TelemetryPayload = {
                         software_name: SOFTWARE_NAME,
@@ -185,11 +182,11 @@ const TYPE_TRAQUITO = "Jetpack";
                     // });
                 }
             }
-            
-            // APRSIS will be added soon
-            // if (settings.uploadToAPRS) {
-            //     aprsisApi.upload(telemetry, balloon);
-            // }
+
+            if (settings.uploadToAPRS) {
+                aprsisApi.upload(telemetry, balloon, receivers);
+            }
+
             break;
         }
     }

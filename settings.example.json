@@ -1,8 +1,4 @@
 {
-    "aprs": {
-        "callsign": "",
-        "passcode": 0
-    },
     "uploadToSondehub": true,
     "uploadToAPRS": false,
     "balloons": [

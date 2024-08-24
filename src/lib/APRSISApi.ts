@@ -1,12 +1,34 @@
 import Balloon from "../interface/Balloon";
 import net from "net";
 import { Telemetry } from "./TelemetryParserApi";
+import { Receiver } from "./WSPRApi";
 
 export default class APRSISApi {
-    constructor(
-        private readonly callsign: string,
-        private readonly passcode: number
-    ) {}
+    constructor() {}
+
+    private getPasscode(callsign: string) {
+        let stophere = callsign.indexOf("-");
+
+        if (stophere !== -1) {
+            callsign = callsign.substring(0, stophere);
+        }
+
+        let realcall = callsign.substring(0, 10).toUpperCase();
+
+        let hash = 0x73e2;
+        let i = 0;
+        let len = realcall.length;
+
+        while (i < len) {
+            hash ^= realcall.charCodeAt(i) << 8;
+            if (i + 1 < len) {
+                hash ^= realcall.charCodeAt(i + 1);
+            }
+            i += 2;
+        }
+
+        return hash & 0x7fff;
+    }
 
     private processCoordinatesAPRS(coord, isLatitude) {
         const degrees = coord.toFixed(6).toString();
@@ -52,11 +74,18 @@ export default class APRSISApi {
         return { latitude, longitude };
     }
 
-    async upload(telemetry: Telemetry, balloon: Balloon) {
+    async upload(
+        telemetry: Telemetry,
+        balloon: Balloon,
+        receivers: Receiver[]
+    ) {
         const connection = new net.Socket();
 
+        const callsign = balloon.payload.split("-")[0];
+        const passcode = this.getPasscode(callsign);
+
         console.log(
-            `Connecting to APRSIS as ${this.callsign} using passcode: ${this.passcode}`
+            `Connecting to APRSIS as ${callsign} using passcode: ${passcode}`
         );
 
         await connection.connect(14580, "euro.aprs2.net");
@@ -66,15 +95,11 @@ export default class APRSISApi {
         connection.on("data", async (d) => {
             const packet: string = d.toString().trim();
 
-            console.log(packet);
+            // console.log(packet);
         });
 
         await connection.write(
-            "user " +
-                this.callsign +
-                " pass " +
-                this.passcode +
-                " vers DEV DEV\r\n"
+            "user " + callsign + " pass " + passcode + " vers DEV DEV\r\n"
         );
 
         await new Promise((r) => setTimeout(r, 2000));
@@ -84,11 +109,19 @@ export default class APRSISApi {
             telemetry.longitude
         );
 
-        const packet = `${balloon.payload}>APLRG1,TCPIP,qAC:!${latitude}/${longitude}O000/000/A=000000/${balloon.device}`;
+        const packet1 = `${balloon.payload}>APZHUB,NOHUB,TCPIP,qAC:!${latitude}/${longitude}O000/000/A=000000/${balloon.device}`;
 
-        console.log(packet);
+        // console.log(packet1);
+        await connection.write(packet1 + "\r\n");
 
-        await connection.write(packet + "\r\n");
+        const packet2 = `${
+            balloon.payload
+        }>APZHUB,NOHUB,TCPIP,qAC:>RX by: ${receivers
+            .map((o) => o.callsign)
+            .join()}`;
+
+        // console.log(packet2);
+        await connection.write(packet2 + "\r\n");
 
         await new Promise((r) => setTimeout(r, 2000));
 
