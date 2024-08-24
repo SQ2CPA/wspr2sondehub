@@ -4,6 +4,17 @@
 
 Please run this wspr2sondehub script ONLY for balloons that you own or you have permission from the owner! Otherwise you will cause duplicates and loss of data because you don't have required details! Thanks!
 
+## Features
+
+-   Supports traquito and zachtek
+-   Supports multiple timeslots (like for example 4 6 and 0 8)
+-   Supports uploading receivers locations [disabled for now because of sondehub dev request]
+-   Supports uploading to APRSIS [disabled for now because of catching that payloads by sondehub APRSIS gateway]
+
+I also want to implement soon:
+
+-   Supports incomplete frames merge (for example we could get only second frame for zachtek but that already contains the location so we can show that on the map)
+
 ## Installation
 
 1. Install NodeJS v20 (you can use https://github.com/nvm-sh/nvm)
@@ -13,10 +24,6 @@ Please run this wspr2sondehub script ONLY for balloons that you own or you have 
 3. Edit your details in `settings.json`. You will find some examples in `settings.example.json`.
 
 4. Run your script by `npm run start`
-
-Upload to APRSIS is currently not supported.
-
-Uploading listeners to sondehub is also disabled.
 
 ## How to add into crontab? (run every 5 minutes)
 
