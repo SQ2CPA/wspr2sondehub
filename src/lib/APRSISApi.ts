@@ -109,7 +109,11 @@ export default class APRSISApi {
             telemetry.longitude
         );
 
-        const packet1 = `${balloon.payload}>APZHUB,NOHUB,TCPIP,qAC:!${latitude}/${longitude}O000/000/A=000000/${balloon.device}`;
+        let taltitude = (telemetry.altitude * 3.28084).toFixed(0) + "";
+
+        while (taltitude.length < 6) taltitude = "0" + taltitude;
+
+        const packet1 = `${balloon.payload}>APZHUB,NOHUB,TCPIP,qAC:!${latitude}/${longitude}O000/000/A=${taltitude}/${balloon.device} (${balloon.hamCallsign})`;
 
         // console.log(packet1);
         await connection.write(packet1 + "\r\n");

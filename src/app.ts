@@ -184,7 +184,7 @@ const TYPE_TRAQUITO = "Jetpack";
             }
 
             if (settings.uploadToAPRS) {
-                aprsisApi.upload(telemetry, balloon, receivers);
+                aprsisApi.upload(telemetry, balloon, receivers.slice(0, 5));
             }
 
             break;

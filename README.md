@@ -6,10 +6,12 @@ Please run this wspr2sondehub script ONLY for balloons that you own or you have 
 
 ## Features
 
+Of cource the main feature is to upload data from WSPR spots to SondeHub Amateur but it also:
+
 -   Supports traquito and zachtek
 -   Supports multiple timeslots (like for example 4 6 and 0 8)
+-   Supports uploading to APRSIS
 -   Supports uploading receivers locations [disabled for now because of sondehub dev request]
--   Supports uploading to APRSIS [disabled for now because of catching that payloads by sondehub APRSIS gateway]
 
 I also want to implement soon:
 
