@@ -21,11 +21,13 @@ I also want to implement soon:
 
 1. Install NodeJS v20 (you can use https://github.com/nvm-sh/nvm)
 
-2. Install required dependencies `npm install`
+2. Install required dependencies `npm install` (run in cloned repo directory)
 
 3. Edit your details in `settings.json`. You will find some examples in `settings.example.json`.
 
-4. Run your script by `npm run start`
+-   If something doesn't work before next step then <b>THIS IS NOT MY SCRIPT PROBLEM!!</b>
+
+4. Run your script by `npm run start` (run in cloned repo directory)
 
 ## How to add into crontab? (run every 5 minutes)
 
