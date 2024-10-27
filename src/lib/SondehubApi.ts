@@ -61,5 +61,7 @@ export default class SondehubApi {
             },
             data,
         });
+
+        // console.log(response.data);
     }
 }

@@ -62,8 +62,6 @@ export default class TelemetryParserApi {
         const locator = query2.locator;
         console.log(`Got locator: ${locator}`);
 
-        date.setHours(date.getHours() + 2);
-
         return {
             date: date.toISOString(),
             latitude: query2.latitude,
@@ -149,8 +147,6 @@ export default class TelemetryParserApi {
         console.log("Latitude: " + latitude);
         console.log("Longitude: " + longitude);
         console.log("Altitude: " + altitude);
-
-        date.setHours(date.getHours() + 2);
 
         return {
             date: date.toISOString(),

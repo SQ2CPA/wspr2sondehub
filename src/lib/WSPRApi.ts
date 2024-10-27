@@ -91,7 +91,7 @@ export default class WSPRAPi {
         const source = msg.split("\t");
 
         return {
-            date: new Date(source[0]),
+            date: new Date(source[0] + "Z"),
             band: source[1],
             callsign: source[2],
             locator: source[3],
