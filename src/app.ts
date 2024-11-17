@@ -120,7 +120,7 @@ const TYPE_TRAQUITO = "Jetpack";
                 );
             }
 
-            if (!!balloon.launchDate) {
+            if (!!balloon.launchDate && false) {
                 telemetry.launchDate = balloon.launchDate;
 
                 const timeDifference = Math.abs(
