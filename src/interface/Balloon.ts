@@ -21,4 +21,5 @@ export default interface Balloon {
     device?: string;
     type: string;
     trackerType: string;
+    launchDate?: string;
 }

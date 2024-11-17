@@ -32,6 +32,8 @@ export interface TelemetryPayload {
     temp?: number;
     vel_v?: number;
     vel_h?: number;
+    days_aloft?: number;
+    launch_date?: string;
 }
 
 const BASE_URL = "https://api.v2.sondehub.org";
@@ -62,6 +64,9 @@ export default class SondehubApi {
             data,
         });
 
-        // console.log(response.data);
+        if (response.data !== "^v^ telm logged") {
+            console.error(`Sending telemetry to Sondehub failed:`);
+            console.error(response.data);
+        }
     }
 }

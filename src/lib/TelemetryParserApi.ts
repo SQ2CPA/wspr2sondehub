@@ -12,6 +12,8 @@ export interface Telemetry {
     sats?: number;
     temperature?: number;
     velocityHorizontal?: number;
+    launchDate?: string;
+    daysAloft?: number;
 }
 
 const POW2DEC = {

@@ -48,6 +48,8 @@ const TYPE_TRAQUITO = "Jetpack";
 
         const queryTime = Math.floor(Date.now() / 1000) - 30 * 60;
 
+        // const queryTime = Math.floor(Date.now() / 1000) - 10 * 60;
+
         const allSlots = Array.isArray(balloon.slots)
             ? balloon.slots
             : [balloon.slots];
@@ -118,9 +120,26 @@ const TYPE_TRAQUITO = "Jetpack";
                 );
             }
 
+            if (!!balloon.launchDate) {
+                telemetry.launchDate = balloon.launchDate;
+
+                const timeDifference = Math.abs(
+                    new Date().getTime() -
+                        new Date(balloon.launchDate).getTime()
+                );
+
+                const daysAloft = Math.ceil(
+                    timeDifference / (1000 * 60 * 60 * 24)
+                );
+
+                telemetry.daysAloft = daysAloft;
+            }
+
             if (
-                Math.floor(telemetry.latitude) === 0 &&
-                Math.floor(telemetry.longitude) === 0
+                (Math.floor(telemetry.latitude) === 0 &&
+                    Math.floor(telemetry.longitude) === 0) ||
+                Math.abs(Math.floor(telemetry.latitude)) === 127 ||
+                Math.abs(Math.floor(telemetry.longitude)) === 127
             ) {
                 console.error(
                     `Got empty location: ${telemetry.latitude} ${telemetry.longitude}, skipping`
@@ -163,6 +182,8 @@ const TYPE_TRAQUITO = "Jetpack";
                         uploader_callsign: receiver.callsign,
                         frequency: receiver.frequency / 1000000,
                         snr: receiver.snr,
+                        days_aloft: telemetry.daysAloft,
+                        launch_date: telemetry.launchDate,
                     };
 
                     await sondehubApi.uploadTelemetry([data]);
