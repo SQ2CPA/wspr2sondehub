@@ -119,7 +119,7 @@ export default class APRSISApi {
             .split(".")[0]
             .replace(/:/g, "");
 
-        const packet1 = `${balloon.payload}>APZHUB,NOHUB,TCPIP,qAC:@${timestamp}!${latitude}/${longitude}O000/000/A=${taltitude}/${balloon.device} (${balloon.hamCallsign})`;
+        const packet1 = `${balloon.payload}>APZHUB,NOHUB,TCPIP,qAC:@${timestamp}!${latitude}/${longitude}O000/000/A=${taltitude}/${balloon.device || balloon.comment} (${balloon.hamCallsign})`;
 
         // console.log(packet1);
         await connection.write(packet1 + "\r\n");
