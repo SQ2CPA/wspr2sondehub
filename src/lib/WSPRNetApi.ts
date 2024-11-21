@@ -159,6 +159,15 @@ export default class WSPRNetAPi {
             });
         }
 
-        return receivers;
+        return receivers
+            .reduce((acc, current) => {
+                if (!acc.find((item) => item.callsign === current.callsign)) {
+                    acc.push(current);
+                }
+
+                return acc;
+            }, [])
+            .sort((a, b) => a.snr - b.snr)
+            .slice(0, 10);
     }
 }
