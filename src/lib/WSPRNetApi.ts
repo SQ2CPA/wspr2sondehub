@@ -58,7 +58,7 @@ export default class WSPRNetAPi {
 
             spots.push({
                 date,
-                band: band.toString(),
+                band: band?.toString(),
                 callsign: cols.eq(1).text().trim(),
                 locator,
                 latitude,
