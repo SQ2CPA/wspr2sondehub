@@ -22,7 +22,7 @@ export default class WSPRNetAPi {
         const response = await this.client.get<string>("/olddb", {
             params: {
                 mode: "html",
-                band: band || "all",
+                band: "all",
                 limit: 200,
                 findcall: callsign,
                 findreporter: "",
@@ -121,7 +121,7 @@ export default class WSPRNetAPi {
         const response = await this.client.get<string>("/olddb", {
             params: {
                 mode: "html",
-                band: 20,
+                band: "all",
                 limit: 200,
                 findcall: balloon.hamCallsign,
                 findreporter: "",
