@@ -1,7 +1,7 @@
 import Balloon from "../interface/Balloon";
 import net from "net";
 import { Telemetry } from "./TelemetryParserApi";
-import { Receiver } from "./WSPRApi";
+import { Receiver } from "../interface/WSPR";
 
 export default class APRSISApi {
     constructor() {}
@@ -90,7 +90,7 @@ export default class APRSISApi {
 
         await connection.connect(14580, "euro.aprs2.net");
 
-        console.log(`Connected`);
+        console.log(`Connected to APRSIS`);
 
         connection.on("data", async (d) => {
             const packet: string = d.toString().trim();
@@ -119,7 +119,11 @@ export default class APRSISApi {
             .split(".")[0]
             .replace(/:/g, "");
 
-        const packet1 = `${balloon.payload}>APZHUB,NOHUB,TCPIP,qAC:@${timestamp}!${latitude}/${longitude}O000/000/A=${taltitude}/${balloon.device || balloon.comment} (${balloon.hamCallsign})`;
+        const packet1 = `${
+            balloon.payload
+        }>APZHUB,NOHUB,TCPIP,qAC:@${timestamp}!${latitude}/${longitude}O000/000/A=${taltitude}/${
+            balloon.device || balloon.comment
+        } (${balloon.hamCallsign})`;
 
         // console.log(packet1);
         await connection.write(packet1 + "\r\n");

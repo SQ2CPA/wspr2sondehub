@@ -1,6 +1,8 @@
 {
     "uploadToSondehub": true,
     "uploadToAPRS": false,
+    "database": "wspr.live",
+    "queryTime": 30,
     "balloons": [
         {
             "active": true,

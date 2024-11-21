@@ -8,10 +8,12 @@ Please run this wspr2sondehub script ONLY for balloons that you own or you have 
 
 Of cource the main feature is to upload data from WSPR spots to SondeHub Amateur but it also:
 
+-   Supports `wsprnet.org` or `wspr.live` spots database
 -   Supports traquito and zachtek
 -   Supports multiple timeslots (like for example 4 6 and 0 8)
 -   Supports uploading to APRSIS
 -   Supports uploading receivers locations [disabled for now because of sondehub dev request]
+-   Supports launch date and days aloft attributes for sondehub [disabled for now because of sondehub bug]
 
 I also want to implement soon:
 
@@ -28,6 +30,18 @@ I also want to implement soon:
 -   If something doesn't work before next step then <b>THIS IS NOT MY SCRIPT PROBLEM!!</b>
 
 4. Run your script by `npm run start` (run in cloned repo directory)
+
+## Configuration (in `settings.json`)
+
+# database
+
+Possible values: `wsprnet.org` or `wspr.live`.
+Default `wspr.live`.
+
+# queryTime
+
+How many minutes back should the data be downloaded?
+Default `30` minutes.
 
 ## How to add into crontab? (run every 5 minutes)
 
@@ -47,5 +61,9 @@ You can also link your `node` and `npm` binaries from `nvm` binaries directly us
 
 where paths are from `which node` and `which nvm` after using `nvm use v20`
 Then you don't need to use aboslute paths in crontab, you can just use `node` or `nvm`
+
+## Updating the software
+
+Remember that you need to replace all updated files and also please run `npm install`
 
 # 73, Damian SQ2CPA, Poland

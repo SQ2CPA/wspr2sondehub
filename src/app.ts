@@ -1,22 +1,38 @@
 import SondehubApi, { TelemetryPayload } from "./lib/SondehubApi";
-import WSPRAPi from "./lib/WSPRApi";
+import WSPRLiveAPi from "./lib/WSPRLiveApi";
+import WSPRNetAPi from "./lib/WSPRNetApi";
 import APRSISApi from "./lib/APRSISApi";
 import TelemetryParserApi, { Telemetry } from "./lib/TelemetryParserApi";
 import { readFile } from "fs/promises";
 import Settings from "./interface/Settings";
-
-const SOFTWARE_NAME = "SQ2CPA wspr2sondehub";
-const SOFTWARE_VERSION = "1.0.0";
-
-const TYPE_ZACHTEK = "ZachTek";
-const TYPE_TRAQUITO = "Jetpack";
+import {
+    DATABASE_WSPRLIVE,
+    DATABASE_WSPRNETORG,
+    SOFTWARE_NAME,
+    SOFTWARE_VERSION,
+    TYPE_TRAQUITO,
+    TYPE_ZACHTEK,
+} from "./consts";
+import { QueryResult, Receiver } from "interface/WSPR";
 
 (async function () {
     const settings: Settings = JSON.parse(
         await readFile("./settings.json", "utf-8")
     );
 
-    const wsprApi = new WSPRAPi();
+    if (!settings.database) {
+        console.info(
+            `INFO: Database field in settings is undefined. We will use wspr.live database`
+        );
+
+        settings.database == DATABASE_WSPRLIVE;
+    }
+
+    if (!settings.queryTime) settings.queryTime = 30;
+
+    const wsprLiveApi = new WSPRLiveAPi();
+    const wsprNetApi = new WSPRNetAPi();
+
     const sondehubApi = new SondehubApi();
     const aprsisApi = new APRSISApi();
     const telemetryParserApi = new TelemetryParserApi();
@@ -42,59 +58,62 @@ const TYPE_TRAQUITO = "Jetpack";
             balloon.type === TYPE_TRAQUITO &&
             (!balloon.traquito?.flightID1 || !balloon.traquito?.flightID3)
         ) {
-            console.log(`Please provide traquito flight IDs`);
+            console.log(`Please provide traquito flight IDs!`);
             continue;
         }
 
-        const queryTime = Math.floor(Date.now() / 1000) - 30 * 60;
+        if (
+            balloon.type === TYPE_TRAQUITO &&
+            settings.database === DATABASE_WSPRNETORG
+        ) {
+            console.log(
+                `Traquito payloads are not suppored by ${DATABASE_WSPRNETORG} for now, sorry!`
+            );
+            continue;
+        }
 
-        // const queryTime = Math.floor(Date.now() / 1000) - 10 * 60;
+        const queryTime =
+            Math.floor(Date.now() / 1000) - settings.queryTime * 60;
 
         const allSlots = Array.isArray(balloon.slots)
             ? balloon.slots
             : [balloon.slots];
 
         for (const slots of allSlots) {
-            const callsignTimeslot = "____-__-__ __:_" + slots.callsign + "%";
+            let query1: QueryResult, query2: QueryResult;
 
-            const telemetryTimeslot = "____-__-__ __:_" + slots.telemetry + "%";
-
-            const bandWhere = !balloon.band
-                ? ""
-                : `(band='${balloon.band}') AND `;
-
-            const rawQuery1 = await wsprApi.performQuery(
-                `SELECT toString(time) as stime, band, tx_sign, tx_loc, tx_lat, tx_lon, power, stime FROM wspr.rx WHERE ${bandWhere}(stime LIKE '${callsignTimeslot}') AND (time > ${queryTime}) AND (tx_sign='${balloon.hamCallsign}') ORDER BY time DESC LIMIT 1`
-            );
-
-            let rawQuery2 = "";
-
-            if (balloon.type === TYPE_ZACHTEK) {
-                rawQuery2 = await wsprApi.performQuery(
-                    `SELECT toString(time) as stime, band, tx_sign, tx_loc, tx_lat, tx_lon, power, stime FROM wspr.rx WHERE ${bandWhere}(stime LIKE '${telemetryTimeslot}') AND (time > ${queryTime}) AND (tx_sign='${balloon.hamCallsign}') ORDER BY time DESC LIMIT 1`
+            if (settings.database === DATABASE_WSPRLIVE) {
+                query1 = await wsprLiveApi.getCallsignSpots(
+                    balloon,
+                    slots.callsign,
+                    queryTime
                 );
-            } else if (balloon.type === TYPE_TRAQUITO) {
-                const flightID =
-                    balloon.traquito.flightID1 +
-                    "_" +
-                    balloon.traquito.flightID3 +
-                    "%";
 
-                rawQuery2 = await wsprApi.performQuery(
-                    `SELECT toString(time) as stime, band, tx_sign, tx_loc, tx_lat, tx_lon, power, stime FROM wspr.rx WHERE ${bandWhere}(stime LIKE '${telemetryTimeslot}') AND (time > ${queryTime}) AND (tx_sign LIKE '${flightID}') ORDER BY time DESC LIMIT 1`
+                query2 = await wsprLiveApi.getTelemetrySpots(
+                    balloon,
+                    slots.telemetry,
+                    queryTime
+                );
+            } else if (settings.database === DATABASE_WSPRNETORG) {
+                query1 = await wsprNetApi.getCallsignSpots(
+                    balloon,
+                    slots.callsign,
+                    queryTime
+                );
+
+                query2 = await wsprNetApi.getTelemetrySpots(
+                    balloon,
+                    slots.telemetry,
+                    queryTime
                 );
             }
 
-            if (!rawQuery1.length || !rawQuery2.length) {
-                console.log(`No data in last 30 minutes`);
+            if (!query1 || !query2) {
+                console.log(
+                    `No data in last ${settings.queryTime} minutes for slots: ${slots.callsign} ${slots.telemetry}`
+                );
                 continue;
             }
-
-            console.log(rawQuery1);
-            console.log(rawQuery2);
-
-            const query1 = wsprApi.parseQuery(rawQuery1);
-            const query2 = wsprApi.parseQuery(rawQuery2);
 
             const timeDiff =
                 (query2.date.getTime() - query1.date.getTime()) / 1000;
@@ -147,12 +166,22 @@ const TYPE_TRAQUITO = "Jetpack";
                 continue;
             }
 
-            const receivers = await wsprApi.getReceivers(
-                query1.stime,
-                query2.stime,
-                balloon,
-                query2.callsign
-            );
+            let receivers: Receiver[];
+
+            if (settings.database === DATABASE_WSPRLIVE) {
+                receivers = await wsprLiveApi.getReceivers(
+                    query1.stime,
+                    query2.stime,
+                    balloon,
+                    query2.callsign
+                );
+            } else if (settings.database === DATABASE_WSPRNETORG) {
+                receivers = await wsprNetApi.getReceivers(
+                    query1.stime,
+                    query2.stime,
+                    balloon
+                );
+            }
 
             console.log(
                 `Got receivers: ${receivers.map((o) => o.callsign).join()}`
@@ -180,7 +209,7 @@ const TYPE_TRAQUITO = "Jetpack";
                         temp: telemetry.temperature,
                         gps: telemetry.gps,
                         uploader_callsign: receiver.callsign,
-                        frequency: receiver.frequency / 1000000,
+                        frequency: receiver.frequency,
                         snr: receiver.snr,
                         days_aloft: telemetry.daysAloft,
                         launch_date: telemetry.launchDate,

@@ -1,6 +1,6 @@
+import { QueryResult } from "../interface/WSPR";
 import Balloon from "../interface/Balloon";
 import UtilsApi from "./UtilsApi";
-import { QueryResult } from "./WSPRApi";
 
 export interface Telemetry {
     date: string;
