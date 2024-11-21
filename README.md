@@ -33,12 +33,12 @@ I also want to implement soon:
 
 ## Configuration (in `settings.json`)
 
-# database
+### database
 
 Possible values: `wsprnet.org` or `wspr.live`.
 Default `wspr.live`.
 
-# queryTime
+### queryTime
 
 How many minutes back should the data be downloaded?
 Default `30` minutes.
