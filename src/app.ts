@@ -139,7 +139,7 @@ import { QueryResult, Receiver } from "interface/WSPR";
                 );
             }
 
-            if (!!balloon.launchDate && false) {
+            if (!!balloon.launchDate) {
                 telemetry.launchDate = balloon.launchDate;
 
                 const timeDifference = Math.abs(

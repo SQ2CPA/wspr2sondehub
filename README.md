@@ -12,8 +12,8 @@ Of cource the main feature is to upload data from WSPR spots to SondeHub Amateur
 -   Supports traquito and zachtek
 -   Supports multiple timeslots (like for example 4 6 and 0 8)
 -   Supports uploading to APRSIS
+-   Supports launch date and days aloft attributes for sondehub
 -   Supports uploading receivers locations [disabled for now because of sondehub dev request]
--   Supports launch date and days aloft attributes for sondehub [disabled for now because of sondehub bug]
 
 I also want to implement soon:
 
@@ -36,12 +36,12 @@ I also want to implement soon:
 ### database
 
 Possible values: `wsprnet.org` or `wspr.live`.
-Default `wspr.live`.
+Default `wspr.live`
 
 ### queryTime
 
 How many minutes back should the data be downloaded?
-Default `30` minutes.
+Default `30`
 
 ## How to add into crontab? (run every 5 minutes)
 
@@ -64,6 +64,6 @@ Then you don't need to use aboslute paths in crontab, you can just use `node` or
 
 ## Updating the software
 
-Remember that you need to replace all updated files and also please run `npm install`
+Remember that you need to replace all updated files and also please run `npm install` otherwise software may stop work!
 
 # 73, Damian SQ2CPA, Poland

@@ -19,7 +19,7 @@
             "hamCallsign": "N0CALL/1",
             "comment": "Example traquito balloon",
             "detail": "10g PL, 20g FL",
-            "launchDate": "2024-05-26 09:00z",
+            "launchDate": "2024-05-26",
             "type": "Jetpack",
             "trackerType": "traquito"
         },
@@ -34,7 +34,7 @@
             "hamCallsign": "N0CALL/2",
             "comment": "Example zachtek balloon",
             "detail": "8g PL, 12g FL",
-            "launchDate": "2024-07-15 10:00z",
+            "launchDate": "2024-07-15",
             "device": "Example zachtek balloon",
             "type": "ZachTek",
             "trackerType": "zachtek1"
@@ -56,7 +56,7 @@
             "hamCallsign": "N0CALL/3",
             "comment": "Example zachtek balloon ",
             "detail": "WSPR at 46 and 80 timeslots",
-            "launchDate": "2024-07-15 10:00z",
+            "launchDate": "2024-07-15",
             "device": "Multiple timeslots at 4 6, 8 0",
             "type": "ZachTek",
             "trackerType": "zachtek1"
