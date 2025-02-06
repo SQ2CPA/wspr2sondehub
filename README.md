@@ -43,6 +43,21 @@ Default `wspr.live`
 How many minutes back should the data be downloaded?
 Default `30`
 
+### band
+
+Don't put `20` if you are flying on 20m band!
+Please use `Bands table` from https://wspr.live/
+
+| Band (in configuration) | Frequency  | Band |
+| ----------------------- | ---------- | ---- |
+| 7                       | 7,038,600  | 40m  |
+| 10                      | 10,138,700 | 30m  |
+| 14                      | 14,095,600 | 20m  |
+| 18                      | 18,104,600 | 17m  |
+| 21                      | 21,094,600 | 15m  |
+| 24                      | 24,924,600 | 12m  |
+| 28                      | 28,124,600 | 10m  |
+
 ## How to add into crontab? (run every 5 minutes)
 
 1. Check your NPM binary path by `which npm`
