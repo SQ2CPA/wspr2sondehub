@@ -13,6 +13,7 @@ export interface TelemetryPayload {
     software_name: string;
     software_version: string;
     uploader_callsign: string;
+    uploader_position: number[];
     frequency: number;
     snr?: number;
     modulation: string;

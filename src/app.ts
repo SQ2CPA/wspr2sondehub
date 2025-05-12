@@ -13,7 +13,8 @@ import {
     TYPE_TRAQUITO,
     TYPE_ZACHTEK,
 } from "./consts";
-import { QueryResult, Receiver } from "interface/WSPR";
+import { QueryResult, Receiver } from "./interface/WSPR";
+import UtilsApi from "./lib/UtilsApi";
 
 (async function () {
     const settings: Settings = JSON.parse(
@@ -189,6 +190,9 @@ import { QueryResult, Receiver } from "interface/WSPR";
 
             if (settings.uploadToSondehub) {
                 for (const receiver of receivers) {
+                    const { latitude, longitude } =
+                        UtilsApi.getLocationFromLocator(receiver.locator);
+
                     const data: TelemetryPayload = {
                         software_name: SOFTWARE_NAME,
                         software_version: SOFTWARE_VERSION,
@@ -209,6 +213,7 @@ import { QueryResult, Receiver } from "interface/WSPR";
                         temp: telemetry.temperature,
                         gps: telemetry.gps,
                         uploader_callsign: receiver.callsign,
+                        uploader_position: [latitude, longitude, 0],
                         frequency: receiver.frequency,
                         snr: receiver.snr,
                         days_aloft: telemetry.daysAloft,
@@ -218,10 +223,6 @@ import { QueryResult, Receiver } from "interface/WSPR";
                     await sondehubApi.uploadTelemetry([data]);
 
                     // DO NOT USE FOR NOW!!!
-                    // const { latitude, longitude } = UtilsApi.getLocationFromLocator(
-                    //     receiver.locator
-                    // );
-
                     // await sondehubApi.uploadListener({
                     //     mobile: false,
                     //     software_name:
