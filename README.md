@@ -11,9 +11,10 @@ Of cource the main feature is to upload data from WSPR spots to SondeHub Amateur
 -   Supports `wsprnet.org` or `wspr.live` spots database
 -   Supports traquito and zachtek
 -   Supports multiple timeslots (like for example 4 6 and 0 8)
--   Supports uploading to APRSIS
+-   Supports uploading to APRS-IS
 -   Supports launch date and days aloft attributes for sondehub
--   Supports uploading receivers locations [disabled for now because of sondehub dev request]
+-   Supports uploading receiver location in telemetry (visible on grafana map)
+-   Supports uploading receivers locations (visible on sondehub map) [disabled for now because of sondehub dev request]
 
 I also want to implement soon:
 
