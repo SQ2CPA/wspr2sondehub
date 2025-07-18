@@ -99,7 +99,11 @@ export default class APRSISApi {
         });
 
         await connection.write(
-            "user " + callsign + " pass " + passcode + " vers DEV DEV\r\n"
+            "user " +
+                callsign +
+                " pass " +
+                passcode +
+                " vers uploader.sp0lnd.pl\r\n"
         );
 
         await new Promise((r) => setTimeout(r, 2000));
@@ -121,20 +125,18 @@ export default class APRSISApi {
 
         const packet1 = `${
             balloon.payload
-        }>APZHUB,NOHUB,TCPIP,qAC:@${timestamp}!${latitude}/${longitude}O000/000/A=${taltitude}/${
+        }>APZHUB,NOHUB,qAC:@${timestamp}!${latitude}/${longitude}O000/000/A=${taltitude}/${
             balloon.device || balloon.comment
         } (${balloon.hamCallsign})`;
 
-        // console.log(packet1);
+        console.log(packet1);
         await connection.write(packet1 + "\r\n");
 
-        const packet2 = `${
-            balloon.payload
-        }>APZHUB,NOHUB,TCPIP,qAC:>RX by: ${receivers
+        const packet2 = `${balloon.payload}>APZHUB,NOHUB,qAC:>RX by: ${receivers
             .map((o) => o.callsign)
             .join()}`;
 
-        // console.log(packet2);
+        console.log(packet2);
         await connection.write(packet2 + "\r\n");
 
         await new Promise((r) => setTimeout(r, 2000));
