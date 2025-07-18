@@ -30,41 +30,31 @@ export default class APRSISApi {
         return hash & 0x7fff;
     }
 
-    private processCoordinatesAPRS(coord, isLatitude) {
-        const degrees = coord.toFixed(6).toString();
-        let direction,
-            coordinate = "",
-            convDeg3;
+    private processCoordinatesAPRS(coord: number, isLatitude: boolean): string {
+        const direction = isLatitude
+            ? coord >= 0
+                ? "N"
+                : "S"
+            : coord >= 0
+            ? "E"
+            : "W";
 
-        if (Math.abs(coord) < (isLatitude ? 10 : 100)) {
-            coordinate += "0";
-        }
+        const absCoord = Math.abs(coord);
+        const degrees = Math.floor(absCoord);
+        const minutes = (absCoord - degrees) * 60;
 
-        if (coord < 0) {
-            direction = isLatitude ? "S" : "W";
-            coordinate += degrees.substring(1, degrees.indexOf("."));
+        let degreesStr: string;
+        if (isLatitude) {
+            degreesStr = degrees.toString().padStart(2, "0");
         } else {
-            direction = isLatitude ? "N" : "E";
-            coordinate += degrees.substring(0, degrees.indexOf("."));
+            degreesStr = degrees.toString().padStart(3, "0");
         }
 
-        let convDeg = Math.abs(coord) - Math.abs(parseInt(coord));
-        let convDeg2 = (convDeg * 60) / 100;
-        convDeg3 = convDeg2.toFixed(6);
+        const minutesStr = minutes.toFixed(2).padStart(5, "0");
 
-        coordinate +=
-            convDeg3.substring(
-                convDeg3.indexOf(".") + 1,
-                convDeg3.indexOf(".") + 3
-            ) +
-            "." +
-            convDeg3.substring(
-                convDeg3.indexOf(".") + 3,
-                convDeg3.indexOf(".") + 5
-            );
-        coordinate += direction;
+        const aprsCoord = degreesStr + minutesStr;
 
-        return coordinate;
+        return aprsCoord + direction;
     }
 
     private convertCoordinates(lat, lon) {
