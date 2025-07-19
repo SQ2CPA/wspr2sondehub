@@ -1,8 +1,24 @@
 # wspr2sondehub
 
-## READ THIS FIRST
+## READ THIS FIRST!
 
 Please run this wspr2sondehub script ONLY for balloons that you own or you have permission from the owner! Otherwise you will cause duplicates and loss of data because you don't have required details! Thanks!
+
+# ‼️ RECOMMENDED METHOD ‼️
+
+Before you proceed with the installation, **I highly recommend using my new web service: [WSPR Balloon Uploader](https://uploader.sp0lnd.pl/)**!
+
+This service fully replaces this script and offers several key advantages:
+
+-   ✅ **No need to run your own 24/7 server/computer.** Just configure your balloon once on the website.
+-   ✅ **Always the latest software version.** The system is automatically updated, so you don't have to worry about manual updates.
+-   ✅ **A convenient graphical interface** to manage your balloons.
+
+This saves you time and resources while ensuring your balloon is tracked reliably. Self-hosting this script is now recommended only for advanced users or for specific use cases.
+
+If you find the service useful, please consider supporting its development. There's a **[Donate](https://uploader.sp0lnd.pl/donate)** page on the website, and any contribution for my involvement in the ballooning community is greatly appreciated!
+
+---
 
 ## Features
 
